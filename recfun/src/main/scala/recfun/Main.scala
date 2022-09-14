@@ -23,7 +23,20 @@ object Main {
   /**
    * Exercise 2
    */
-  def balance(chars: List[Char]): Boolean = ???
+  def balance(chars: List[Char]): Boolean = {
+    def numPair(num: Int, charList: List[Char]): Int = {
+      if(num < 0) -1
+      else if(charList.isEmpty) num
+      else if(charList.head == '(' ) numPair(num+1, charList.tail)
+      else if(charList.head == ')' ){
+        if(num > 0) numPair(num-1, charList.tail)
+        else -1
+      } 
+      else numPair(num, charList.tail)
+    }
+
+    numPair(0, chars) == 0
+  }
 
   /**
    * Exercise 3
