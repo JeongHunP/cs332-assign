@@ -77,6 +77,12 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val s_union_s1_s2 = union(s1, s2)
+    val s_union_s2_s3 = union(s2, s3)
+    val s_union_all = union(union(s1, s2), s3)
+    val f_is_2 = (arg: Int) => (arg==2)
+    val f_is_positive = (arg: Int) => (arg > 0)
+    val f_square = (arg: Int) => (arg*arg)
   }
 
   /**
@@ -86,7 +92,7 @@ class FunSetSuite extends FunSuite {
    * Once you finish your implementation of "singletonSet", exchange the
    * function "ignore" by "test".
    */
-  ignore("singletonSet(1) contains 1") {
+  test("singletonSet(1) contains 1") {
     
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
@@ -101,12 +107,82 @@ class FunSetSuite extends FunSuite {
     }
   }
 
-  ignore("union contains all elements") {
+  test("union contains all elements") {
     new TestSets {
       val s = union(s1, s2)
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
+    }
+  }
+
+  test("intersect contains common elements"){
+    new TestSets{
+      val s = intersect(s_union_s1_s2, s_union_s2_s3)
+      assert(contains(s, 2), "Intersect 1")
+      assert(!contains(s, 1), "Intersect 2")
+      assert(!contains(s, 3), "Intersect 3")
+      assert(!contains(s, 4), "Intersect 4")
+    }
+  }
+
+  test("diff contains the difference of elements"){
+    new TestSets{
+      val s = diff(s_union_s1_s2, s_union_s2_s3)
+      assert(contains(s, 1), "Diff 1")
+      assert(!contains(s, 2), "Diff 2")
+      assert(!contains(s, 3), "Diff 3")
+      assert(!contains(s, 4), "Diff 4")
+    }
+  }
+
+  test("filter contains subset of s where filter holds"){
+    new TestSets{
+      val s_all_filter_2 = filter(s_union_all, f_is_2)
+      val s1_filter_2 = filter(s1, f_is_2)
+      val s_all_filter_postive = filter(s_union_all, f_is_positive)
+      assert(contains(s_all_filter_2, 2), "Filter 1")
+      assert(!contains(s_all_filter_2, 1), "Filter 2")
+      assert(!contains(s1_filter_2, 2), "Filter 3")
+      assert(!contains(s1_filter_2, 1), "Filter 4")
+
+      assert(contains(s_all_filter_postive, 1), "Filter 5")
+      assert(contains(s_all_filter_postive, 2), "Filter 6")
+      assert(contains(s_all_filter_postive, 3), "Filter 7")
+    }
+  }
+
+  test("forall checks s satisfy p"){
+    new TestSets{
+      val s0 = singletonSet(0)
+      val s_nonnegative = union(s0, s_union_all)
+      assert(forall(s2, f_is_2), "Set {2} and filter x==2")
+      assert(!forall(s_union_all, f_is_2), "Set {1,2,3} and filter x==2")
+      assert(forall(s_union_all, f_is_positive), "Set {1,2,3} and filter x > 0")
+      assert(!forall(s_nonnegative, f_is_positive), "Set {0,1,2,3} and filter x > 0")
+    }
+  }
+
+  test("exists checks at least 1 element of s satisfies p"){
+    new TestSets{
+      val s0 = singletonSet(0)
+      val s_nonnegative = union(s0, s_union_all)
+      assert(exists(s2, f_is_2), "Set {2} and filter x==2")
+      assert(exists(s_union_all, f_is_2), "Set {1,2,3} and filter x==2")
+      assert(exists(s_union_all, f_is_positive), "Set {1,2,3} and filter x > 0")
+      assert(exists(s_nonnegative, f_is_positive), "Set {0,1,2,3} and filter x > 0")
+      assert(!exists(s0, f_is_positive), "Set {0} and filter x > 0")
+    }
+  }
+
+  test("map returns transformed set of s"){
+    new TestSets{
+      val s_square = map(s_union_all, f_square)
+      assert(contains(s_square, 1), "Set {1,2,3} and map square: contains 1?")
+      assert(contains(s_square, 4), "Set {1,2,3} and map square: contains 4?")
+      assert(contains(s_square, 9), "Set {1,2,3} and map square: contains 9?")
+      assert(!contains(s_square, 2), "Set {1,2,3} and map square: contains 2?")
+      assert(!contains(s_square, 3), "Set {1,2,3} and map square: contains 3?")
     }
   }
 }
