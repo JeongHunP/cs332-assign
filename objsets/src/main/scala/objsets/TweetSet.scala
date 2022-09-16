@@ -66,7 +66,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def mostRetweeted: Tweet = ???
+  def mostRetweeted: Tweet
 
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
@@ -77,8 +77,15 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def descendingByRetweet: TweetList = ???
-
+  def descendingByRetweet: TweetList = {
+    try{
+      val mostRetweeted = this.mostRetweeted
+      new Cons(mostRetweeted, this.remove(mostRetweeted).descendingByRetweet)
+    }catch{
+      case _: NoSuchElementException => Nil
+    }
+  }
+    
 
   /**
    * The following methods are already implemented
@@ -112,7 +119,7 @@ class Empty extends TweetSet {
 
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
-
+  def mostRetweeted: Tweet = throw new java.util.NoSuchElementException
   /**
    * The following methods are already implemented
    */
@@ -133,6 +140,26 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     right.filterAcc(p, accAfterLeft)
   }
 
+  def mostRetweeted: Tweet = {
+    def checkLeft : Tweet = {
+      try {
+        val leftMostTweet = left.mostRetweeted
+        if (elem.retweets < leftMostTweet.retweets) leftMostTweet else elem
+      }catch{
+        case _ : java.util.NoSuchElementException => elem  
+      }
+    }
+    def checkRight(cur: Tweet) : Tweet = {
+      try {
+        val rightMostTweet = right.mostRetweeted
+        if (cur.retweets < rightMostTweet.retweets) rightMostTweet else cur
+      }catch{
+        case _ : java.util.NoSuchElementException => cur 
+      }
+    }
+
+    checkRight(checkLeft)
+  }
 
   /**
    * The following methods are already implemented
