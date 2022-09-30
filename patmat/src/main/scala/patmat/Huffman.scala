@@ -82,7 +82,6 @@ object Huffman {
    *   }
    */
   def times(chars: List[Char]): List[(Char, Int)] = 
-    //chars.groupBy(identity).mapValues(_.size)
     chars.groupBy(char => char).map(group => (group._1, group._2.length)).toList
   
 
@@ -232,7 +231,11 @@ object Huffman {
    * This function returns the bit sequence that represents the character `char` in
    * the code table `table`.
    */
-  def codeBits(table: CodeTable)(char: Char): List[Bit] = table.filter(_._1 == char).apply(0)._2
+  def codeBits(table: CodeTable)(char: Char): List[Bit] = {
+    val filterList = table.filter(_._1 == char)
+    if(filterList.size == 0) List()
+    else filterList.apply(0)._2
+  }
 
   /**
    * Given a code tree, create a code table which contains, for every character in the

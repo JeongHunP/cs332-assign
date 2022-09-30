@@ -75,6 +75,12 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("empty table for codeBits") {
+    new TestTrees {
+      assert(codeBits(List(('b', List())))('a') === List())
+    }
+  }
+
   test("quickencode and decode which includes convert and codeBits") {
     new TestTrees {
       assert(decode(t1, quickEncode(t1)("ab".toList)) === "ab".toList)
