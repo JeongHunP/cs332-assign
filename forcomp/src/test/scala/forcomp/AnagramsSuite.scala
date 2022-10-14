@@ -19,9 +19,12 @@ class AnagramsSuite extends FunSuite {
   }
 
 
-
   test("sentenceOccurrences: abcd e") {
     assert(sentenceOccurrences(List("abcd", "e")) === List(('a', 1), ('b', 1), ('c', 1), ('d', 1), ('e', 1)))
+  }
+
+  test("sentenceOccurrences: abcd eab") {
+    assert(sentenceOccurrences(List("abcd", "eab")) === List(('a', 2), ('b', 2), ('c', 1), ('d', 1), ('e', 1)))
   }
 
 
@@ -47,6 +50,27 @@ class AnagramsSuite extends FunSuite {
     val r = List(('r', 1))
     val lad = List(('a', 1), ('d', 1), ('l', 1))
     assert(subtract(lard, r) === lad)
+  }
+
+  test("subtract: llaarrdd - llaa") {
+    val llaarrdd = wordOccurrences("llaarrdd")
+    assert(llaarrdd === List(('a', 2), ('d', 2), ('l', 2), ('r', 2)))
+    val llaa = wordOccurrences("llaa")
+    assert(llaa === List(('a', 2), ('l', 2)))
+    val rrdd = List(('d', 2), ('r', 2))
+    assert(subtract(llaarrdd, llaa) === rrdd)
+  }
+
+  test("subtract: llaarrdd - lard") {
+    val llaarrdd = wordOccurrences("llaarrdd")
+    assert(llaarrdd === List(('a', 2), ('d', 2), ('l', 2), ('r', 2)))
+    val lard = List(('a', 1), ('d', 1), ('l', 1), ('r', 1))
+    assert(subtract(llaarrdd, lard) === lard)
+  }
+
+  test("subtract: lard - lard") {
+    val lard = List(('a', 1), ('d', 1), ('l', 1), ('r', 1))
+    assert(subtract(lard, lard) === List())
   }
 
 
