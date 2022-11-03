@@ -26,6 +26,57 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
+  trait Level0 extends SolutionChecker {
+    val level =
+    """ST
+      |oo
+      |oo""".stripMargin
+
+      val optsolution = List(Down, Right, Up)
+  }
+
+  test("terrain function level 0") {
+    new Level0 {
+      assert(terrain(Pos(0,0)), "0,0")
+      assert(!terrain(Pos(0,2)), "0,2")
+    }
+  }
+
+  test("findChar level 0") {
+    new Level0 {
+      assert(startPos == Pos(0,0))
+      assert(goal == Pos(0,1))
+    }
+  }
+
+  test("optimal solution for level 0") {
+    new Level0 {
+      assert(solve(solution) == Block(goal, goal))
+    }
+  }
+
+  test("optimal solution length for level 0") {
+    new Level0 {
+      assert(solution.length == optsolution.length)
+      assert(solution == optsolution)
+    }
+  }
+
+  test("pathsFromStart for level 0"){
+    new Level0 {
+      assert(pathsFromStart == Stream((Block(Pos(0,0),Pos(0,0)),List()), 
+                                  (Block(Pos(1,0),Pos(2,0)),List(Down)), 
+                                  (Block(Pos(1,1),Pos(2,1)),List(Right, Down)), 
+                                  (Block(Pos(0,1),Pos(0,1)),List(Up, Right, Down))))
+    }
+  }
+
+  test("pathsToGoal for level 0"){
+    new Level0 {
+      assert(pathsToGoal == Stream((Block(Pos(0,1),Pos(0,1)),List(Up, Right, Down))))
+    }
+  }
+
   trait Level1 extends SolutionChecker {
       /* terrain for level 1*/
 
@@ -39,12 +90,6 @@ class BloxorzSuite extends FunSuite {
 
     val optsolution = List(Right, Right, Down, Right, Right, Right, Down)
   }
-/*
-  test("terrainFunction"){
-    val vec = Vector(Vector('S', 'T'), Vector('o', 'o'), Vector('o', 'o'))
-    val pos = Pos(0,0)
-    assert(terrainFunction(vec)(pos), true) 
-  }*/
 
   test("terrain function level 1") {
     new Level1 {

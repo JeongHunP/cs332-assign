@@ -53,9 +53,9 @@ trait StringParserTerrain extends GameDef {
    * by `levelVector`.
    */
   def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean = 
-    (pos: Pos) => levelVector.indices.contains(pos.x)
+    ((pos: Pos) => levelVector.indices.contains(pos.x)
               && levelVector(pos.x).indices.contains(pos.y)
-              && (levelVector(pos.x)(pos.y) != "-")
+              && (levelVector(pos.x)(pos.y) != '-'))
 
   /**
    * This function should return the position of character `c` in the
