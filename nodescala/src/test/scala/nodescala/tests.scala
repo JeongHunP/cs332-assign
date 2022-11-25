@@ -30,21 +30,36 @@ class NodeScalaSuite extends FunSuite {
       case t: TimeoutException => // ok!
     }
   }
+  test("A Future should have any of list") {
+    val any = Future.any(
+      List(
+        Future { 1 },
+        Future {
+          Thread.sleep(1000)
+          2
+        },
+        Future {
+          Thread.sleep(2000)
+          throw new Exception
+        }
+      )
+    )
+    assert(Await.result(any, 3 second) == 1)
+  }
 
-  
-  
   class DummyExchange(val request: Request) extends Exchange {
     @volatile var response = ""
     val loaded = Promise[String]()
-    def write(s: String) {
+    def write(s: String) = {
       response += s
     }
-    def close() {
+    def close() = {
       loaded.success(response)
     }
   }
 
-  class DummyListener(val port: Int, val relativePath: String) extends NodeScala.Listener {
+  class DummyListener(val port: Int, val relativePath: String)
+      extends NodeScala.Listener {
     self =>
 
     @volatile private var started = false
@@ -93,17 +108,18 @@ class NodeScalaSuite extends FunSuite {
   }
   test("Server should serve requests") {
     val dummy = new DummyServer(8191)
-    val dummySubscription = dummy.start("/testDir") {
-      request => for (kv <- request.iterator) yield (kv + "\n").toString
+    val dummySubscription = dummy.start("/testDir") { request =>
+      for (kv <- request.iterator) yield (kv + "\n").toString
     }
 
     // wait until server is really installed
     Thread.sleep(500)
 
-    def test(req: Request) {
+    def test(req: Request) = {
       val webpage = dummy.emit("/testDir", req)
       val content = Await.result(webpage.loaded.future, 1 second)
-      val expected = (for (kv <- req.iterator) yield (kv + "\n").toString).mkString
+      val expected =
+        (for (kv <- req.iterator) yield (kv + "\n").toString).mkString
       assert(content == expected, s"'$content' vs. '$expected'")
     }
 
@@ -115,7 +131,3 @@ class NodeScalaSuite extends FunSuite {
   }
 
 }
-
-
-
-
